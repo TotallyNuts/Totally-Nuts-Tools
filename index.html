@@ -19,11 +19,11 @@
             margin: 0 auto;
         }
         h2 {
-            color: #8B4513; /* Bruin, passend bij boomstronk */
+            color: #8B4513;
             margin-bottom: 20px;
         }
 
-        /* --- SCORE SCHIJF STIJL --- */
+        /* --- SCORE SCHIJF STIJL (ONGEWIJZIGD) --- */
         .score-disk-area {
             display: flex;
             flex-direction: column;
@@ -36,21 +36,21 @@
         }
         #score-disk-visual {
             position: relative;
-            width: 280px; /* Grotere schijf voor 3 ringen */
+            width: 280px;
             height: 280px;
             border-radius: 50%;
-            background: #A0522D; /* Basis boomschijf kleur */
-            box-shadow: 0 0 0 10px #D2B48C, inset 0 0 20px rgba(0,0,0,0.5); /* Schors en diepte */
+            background: #A0522D;
+            box-shadow: 0 0 0 10px #D2B48C, inset 0 0 20px rgba(0,0,0,0.5);
         }
         #score-pointer {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 120px; /* Langere pijl */
+            width: 120px;
             height: 5px;
-            background-color: #C0392B; /* Rode aanwijzer */
-            transform-origin: 0% 50%; /* Draait vanaf het midden */
-            transform: translate(0, -50%) rotate(-90deg); /* Start op 0/10/20 (bovenaan) */
+            background-color: #C0392B;
+            transform-origin: 0% 50%;
+            transform: translate(0, -50%) rotate(-90deg);
             transition: transform 0.3s ease-in-out;
             z-index: 10;
         }
@@ -73,36 +73,25 @@
             left: 50%;
             transform-origin: 0% 50%;
             font-weight: bold;
-            color: rgba(255, 255, 255, 0.7); /* Minder opvallend */
+            color: rgba(255, 255, 255, 0.7);
         }
-        
-        /* Algemene Rotatie Formule */
         .label {
-            /* 360 / 10 = 36 graden per cijferstap */
             --rotation: calc(var(--i) * 36deg);
-            /* Draai naar de rand, dan terugdraaien om het cijfer rechtop te houden */
             transform: rotate(var(--rotation)) translate(var(--radius)) rotate(calc(-1 * var(--rotation)));
         }
-
-        /* RING 1: 0 t/m 9 (Grootste Cirkel, Meest Dichtbij Pijl) */
         .label.ring-1 {
             --radius: 120px;
             font-size: 1.4em;
         }
-
-        /* RING 2: 10 t/m 19 (Middelste Cirkel) */
         .label.ring-2 {
             --radius: 90px;
             font-size: 1.1em;
         }
-        
-        /* RING 3: 20 t/m 29 (Binnenste Cirkel) */
         .label.ring-3 {
             --radius: 60px;
             font-size: 0.8em;
         }
         
-        /* Cirkel in het midden (centrum) */
         #center-pin {
             position: absolute;
             top: 50%;
@@ -114,8 +103,6 @@
             transform: translate(-50%, -50%);
             z-index: 11;
         }
-
-        /* HUIDIGE TIEN-TAL INDICATOR */
         #tens-indicator {
             font-size: 2em;
             color: #d9534f;
@@ -123,8 +110,6 @@
             min-height: 30px;
             font-weight: bold;
         }
-
-        /* KOPPELING EN KNOPPEN */
         .control-area {
             display: flex;
             justify-content: center;
@@ -168,9 +153,20 @@
             justify-content: center;
             gap: 20px;
         }
-        .rules-section p, .rules-section ul {
+        
+        /* Specifieke stijl voor de dobbelsteen beschrijving */
+        .dice-actions-list {
             text-align: left;
-            line-height: 1.6;
+            margin-top: 15px;
+        }
+        .dice-actions-list li {
+            margin-bottom: 5px;
+            list-style: none; /* Verwijder standaard bolletjes */
+        }
+        .dice-actions-list li::before {
+            content: attr(data-list-number) ": "; /* Voeg het nummer toe */
+            font-weight: bold;
+            color: #8B4513;
         }
     </style>
 </head>
@@ -236,6 +232,18 @@
                 <span id="dice-result">?</span>
                 <button onclick="rollDice()">Werp Dobbelsteen (d6)</button>
             </div>
+
+            <div class="dice-actions-list">
+                <h3>Acties per Worp:</h3>
+                <ul>
+                    <li data-list-number="1">Elk koninkrijk dobbelt met 1 D6 en telt het aantal ogen op bij de kracht van het leger</li>
+                    <li data-list-number="2">Er kunnen geen cuties gespeeld worden deze ronde</li>
+                    <li data-list-number="3">Priesters kunnen demonen niet bekeren tot engel deze ronde</li>
+                    <li data-list-number="4">Kiezen: **krachtkaarten** pakken of leider **+1 omhoog trainen**</li>
+                    <li data-list-number="5">Elke speler pakt blind een **gevechtskaart**</li>
+                    <li data-list-number="6">Dubbele kracht **leider** (of sterkste leider bij meer dan 2 spelers) deze ronde</li>
+                </ul>
+            </div>
         </div>
 
         <hr>
@@ -246,39 +254,35 @@
             
             <h3>Het Doel</h3>
             <p>Verzamel de meeste punten. Let op de tien-tallen onder de schijf om je totale score te bepalen.</p>
+
+            <h3>Een Beurt Spelen</h3>
+            <ul>
+                <li>**Werp.** Gebruik de virtuele dobbelsteen om een actie te bepalen (zie de lijst hierboven).</li>
+                <li>**Actie.** Volg de instructies van de worp.</li>
+                <li>**Scoren.** Gebruik de knoppen (+1, +2, +3, -1) om je score direct bij te werken op de schijf.</li>
+            </ul>
         </div>
     </div>
 
     <script>
-        // JAVASCRIPT voor de functionaliteit
         let score = 0;
-        const degreesPerStep = 36; // 360 graden / 10 stappen
+        const degreesPerStep = 36;
 
         function updateDisk() {
             const pointer = document.getElementById('score-pointer');
             const tensIndicator = document.getElementById('tens-indicator');
-            
-            // 1. Bepaal de resterende eenheid (0-9) voor de pijlrotatie
             const unitScore = score % 10;
-            
-            // 2. Bereken de rotatiehoek: -90 graden is de startpositie (bovenaan)
             const angle = (unitScore * degreesPerStep) - 90;
             
-            // 3. Pas de rotatie toe op de pijl
             pointer.style.transform = `translate(0, -50%) rotate(${angle}deg)`;
-
-            // 4. Update de numerieke indicator (deze toont de totale score)
             tensIndicator.textContent = `Huidige Score: ${score}`;
             
-            // 5. Visuele highlights (Optioneel, om de actieve ring te benadrukken)
             const ring1 = document.querySelectorAll('.ring-1');
             const ring2 = document.querySelectorAll('.ring-2');
             const ring3 = document.querySelectorAll('.ring-3');
             
-            // Reset alle kleuren
             [...ring1, ...ring2, ...ring3].forEach(el => el.style.color = 'rgba(255, 255, 255, 0.7)');
 
-            // Bepaal welke ring actief is en kleur het actieve cijfer in die ring
             if (score <= 9) {
                 ring1[unitScore].style.color = 'yellow';
             } else if (score <= 19) {
@@ -291,23 +295,20 @@
         function changeScore(value) {
             score += value;
 
-            // Zorg dat de score binnen de 0-29 range blijft
             if (score < 0) {
                 score = 0;
             } else if (score > 29) {
                 score = 29;
             }
             
-            updateDisk(); // Roep de visuele update aan
+            updateDisk();
         }
 
         function rollDice() {
-            // Genereert een willekeurig geheel getal tussen 1 en 6 (standaard d6)
             const result = Math.floor(Math.random() * 6) + 1;
             document.getElementById('dice-result').textContent = result;
         }
 
-        // Initialiseer bij het laden van de pagina
         document.addEventListener('DOMContentLoaded', updateDisk);
     </script>
 
