@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Totally Nuts Game - Score Schijf & Tools</title>
+    <title id="app-title">Totally Nuts Game - Score Schijf & Tools</title>
     <style>
         /* --- BASIS STIJL --- */
         body {
@@ -95,12 +95,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 15px;
+            flex-wrap: wrap; /* Belangrijk voor kleine schermen */
+            gap: 10px;
             margin-top: 20px;
         }
         .control-area button {
-            padding: 12px 18px;
-            font-size: 1.1em;
+            padding: 10px 15px;
+            font-size: 1.0em;
             cursor: pointer;
             border: none;
             border-radius: 6px;
@@ -108,7 +109,6 @@
             transition: background-color 0.2s;
         }
         
-        /* Specifieke stijlen voor de verschillende knoppen */
         .control-area .score-button {
             background-color: #5cb85c; /* Groen */
         }
@@ -120,6 +120,12 @@
         }
         .control-area .reset-button:hover {
             background-color: #ec971f;
+        }
+        .control-area .language-button {
+            background-color: #3498db; /* Blauw */
+        }
+        .control-area .language-button:hover {
+            background-color: #2980b9;
         }
 
 
@@ -167,7 +173,11 @@
 <body>
 
     <div class="container">
-        <h2>🌰 Totally Nuts Score Schijf (0-29)</h2>
+        <div class="control-area">
+            <button onclick="toggleLanguage()" id="lang-button" class="language-button">Switch to English</button>
+        </div>
+
+        <h2 id="score-title">🌰 Totally Nuts Score Schijf (0-29)</h2>
         <div class="score-disk-area">
             
             <div id="score-disk-visual">
@@ -182,28 +192,28 @@
                 <button onclick="changeScore(2)" class="score-button">+2</button>
                 <button onclick="changeScore(3)" class="score-button">+3</button>
                 <button onclick="changeScore(-1)" class="score-button">-1</button>
-                <button onclick="resetScore()" class="reset-button">Score Reset (0)</button>
+                <button onclick="resetScore()" id="reset-button" class="reset-button">Score Reset (0)</button>
             </div>
         </div>
 
         <hr>
 
         <div class="dice-container">
-            <h2>🎲 Virtuele Dobbelsteen</h2>
+            <h2 id="dice-title">🎲 Virtuele Dobbelsteen</h2>
             <div class="dice-controls">
                 <span id="dice-result">?</span>
-                <button onclick="rollDice()">Werp Dobbelsteen (d6)</button>
+                <button onclick="rollDice()" id="roll-button">Werp Dobbelsteen (d6)</button>
             </div>
 
             <div class="dice-actions-list">
-                <h3>Acties per Worp:</h3>
+                <h3 id="actions-title">Acties per Worp:</h3>
                 <ul>
-                    <li data-list-number="1">Elk koninkrijk dobbelt met 1 D6 en telt het aantal ogen op bij de kracht van het leger</li>
-                    <li data-list-number="2">Er kunnen geen cuties gespeeld worden deze ronde</li>
-                    <li data-list-number="3">Priesters kunnen demonen niet bekeren tot engel deze ronde</li>
-                    <li data-list-number="4">Kiezen: **krachtkaarten** pakken of leider **+1 omhoog trainen**</li>
-                    <li data-list-number="5">Elke speler pakt blind een **gevechtskaart**</li>
-                    <li data-list-number="6">Dubbele kracht **leider** (of sterkste leider bij meer dan 2 spelers) deze ronde</li>
+                    <li data-list-number="1" data-trans-key="dice_1">Elk koninkrijk dobbelt met 1 D6 en telt het aantal ogen op bij de kracht van het leger</li>
+                    <li data-list-number="2" data-trans-key="dice_2">Er kunnen geen cuties gespeeld worden deze ronde</li>
+                    <li data-list-number="3" data-trans-key="dice_3">Priesters kunnen demonen niet bekeren tot engel deze ronde</li>
+                    <li data-list-number="4" data-trans-key="dice_4">Kiezen: **krachtkaarten** pakken of leider **+1 omhoog trainen**</li>
+                    <li data-list-number="5" data-trans-key="dice_5">Elke speler pakt blind een **gevechtskaart**</li>
+                    <li data-list-number="6" data-trans-key="dice_6">Dubbele kracht **leider** (of sterkste leider bij meer dan 2 spelers) deze ronde</li>
                 </ul>
             </div>
         </div>
@@ -211,41 +221,128 @@
         <hr>
         
         <div class="rules-section">
-            <h2>📜 Spelregels</h2>
-            <p>Welkom bij de digitale hulpmiddelen voor Totally Nuts Game! Gebruik de scoreschijf hierboven om je score tot 29 bij te houden.</p>
+            <h2 id="rules-title">📜 Spelregels</h2>
+            <p id="rules-intro">Welkom bij de digitale hulpmiddelen voor Totally Nuts Game! Gebruik de scoreschijf hierboven om je score tot 29 bij te houden.</p>
             
-            <h3>Een Beurt Spelen</h3>
+            <h3 id="rules-subtitle">Een Beurt Spelen</h3>
             <ul>
-                <li>**Werp.** Gebruik de virtuele dobbelsteen om een actie te bepalen.</li>
-                <li>**Actie.** Volg de instructies van de worp.</li>
-                <li>**Scoren.** Gebruik de knoppen (+1, +2, +3, -1) om je score direct bij te werken op de schijf.</li>
+                <li id="rule-1">**Werp.** Gebruik de virtuele dobbelsteen om een actie te bepalen.</li>
+                <li id="rule-2">**Actie.** Volg de instructies van de worp.</li>
+                <li id="rule-3">**Scoren.** Gebruik de knoppen (+1, +2, +3, -1) om je score direct bij te werken op de schijf.</li>
             </ul>
         </div>
     </div>
 
     <script>
         let score = 0;
-        const degreesPerStep = 36; // 360 graden / 10 stappen
+        const degreesPerStep = 36;
+        let currentLang = 'nl'; // Starttaal
 
+        // Alle vertaalbare teksten verzameld in één object
+        const translations = {
+            'en': {
+                'app_title': 'Totally Nuts Game - Score Disc & Tools',
+                'lang_button': 'Schakel naar Nederlands',
+                'score_title': '🌰 Totally Nuts Score Disc (0-29)',
+                'tens_indicator': 'Current Score:',
+                'reset_button': 'Score Reset (0)',
+                'dice_title': '🎲 Virtual Die',
+                'roll_button': 'Roll Die (d6)',
+                'actions_title': 'Actions per Roll:',
+                'dice_1': 'Each kingdom rolls 1 D6 and adds the number of pips to the strength of the army',
+                'dice_2': 'No cuties can be played this round',
+                'dice_3': 'Priests cannot convert demons to angels this round',
+                'dice_4': 'Choose: take power cards or train leader +1 up',
+                'dice_5': 'Every player blindly draws a combat card',
+                'dice_6': 'Double leader strength (or strongest leader if >2 players) this round',
+                'rules_title': '📜 Game Rules',
+                'rules_intro': 'Welcome to the Totally Nuts Game digital tools! Use the score disc above to track your score up to 29.',
+                'rules_subtitle': 'Playing a Turn',
+                'rule_1': '**Roll.** Use the virtual die to determine an action.',
+                'rule_2': '**Action.** Follow the instructions of the roll.',
+                'rule_3': '**Score.** Use the buttons (+1, +2, +3, -1) to update your score directly on the disc.'
+            },
+            'nl': {
+                'app_title': 'Totally Nuts Game - Score Schijf & Tools',
+                'lang_button': 'Switch to English',
+                'score_title': '🌰 Totally Nuts Score Schijf (0-29)',
+                'tens_indicator': 'Huidige Score:',
+                'reset_button': 'Score Reset (0)',
+                'dice_title': '🎲 Virtuele Dobbelsteen',
+                'roll_button': 'Werp Dobbelsteen (d6)',
+                'actions_title': 'Acties per Worp:',
+                'dice_1': 'Elk koninkrijk dobbelt met 1 D6 en telt het aantal ogen op bij de kracht van het leger',
+                'dice_2': 'Er kunnen geen cuties gespeeld worden deze ronde',
+                'dice_3': 'Priesters kunnen demonen niet bekeren tot engel deze ronde',
+                'dice_4': 'Kiezen: **krachtkaarten** pakken of leider **+1 omhoog trainen**',
+                'dice_5': 'Elke speler pakt blind een **gevechtskaart**',
+                'dice_6': 'Dubbele kracht **leider** (of sterkste leider bij meer dan 2 spelers) deze ronde',
+                'rules_title': '📜 Spelregels',
+                'rules_intro': 'Welkom bij de digitale hulpmiddelen voor Totally Nuts Game! Gebruik de scoreschijf hierboven om je score tot 29 bij te houden.',
+                'rules_subtitle': 'Een Beurt Spelen',
+                'rule_1': '**Werp.** Gebruik de virtuele dobbelsteen om een actie te bepalen.',
+                'rule_2': '**Actie.** Volg de instructies van de worp.',
+                'rule_3': '**Scoren.** Gebruik de knoppen (+1, +2, +3, -1) om je score direct bij te werken op de schijf.'
+            }
+        };
+
+        function translatePage(lang) {
+            const t = translations[lang];
+            
+            // Vertaling van de titel en knoppen
+            document.getElementById('app-title').textContent = t.app_title;
+            document.getElementById('lang-button').textContent = t.lang_button;
+            document.getElementById('score-title').textContent = t.score_title;
+            document.getElementById('reset-button').textContent = t.reset_button;
+            document.getElementById('dice-title').textContent = t.dice_title;
+            document.getElementById('roll-button').textContent = t.roll_button;
+            document.getElementById('actions-title').textContent = t.actions_title;
+            document.getElementById('rules-title').textContent = t.rules_title;
+            document.getElementById('rules-intro').textContent = t.rules_intro;
+            document.getElementById('rules-subtitle').textContent = t.rules_subtitle;
+            document.getElementById('rule-1').innerHTML = t.rule_1; // Gebruik innerHTML vanwege de **vetgedrukte** tekst
+            document.getElementById('rule-2').innerHTML = t.rule_2;
+            document.getElementById('rule-3').innerHTML = t.rule_3;
+
+            // Vertaling van de dobbelsteen acties (via data-trans-key)
+            for (let i = 1; i <= 6; i++) {
+                const li = document.querySelector(`[data-trans-key="dice_${i}"]`);
+                if (li) {
+                    li.innerHTML = t[`dice_${i}`];
+                }
+            }
+            
+            // Update de numerieke indicator (alleen de tekst 'Huidige Score:' of 'Current Score:')
+            const scoreText = document.getElementById('tens-indicator').textContent.split(':');
+            document.getElementById('tens-indicator').textContent = t.tens_indicator + ': ' + scoreText[scoreText.length - 1].trim();
+
+            // Sla de voorkeurstaal op in de browser (optioneel, voor de volgende keer)
+            localStorage.setItem('gameLang', lang);
+        }
+
+        function toggleLanguage() {
+            currentLang = (currentLang === 'nl') ? 'en' : 'nl';
+            translatePage(currentLang);
+        }
+
+        // --- SCORESCHIJF & DOBBELSTEEN FUNCTIES (ONGEWIJZIGD) ---
+        
         function updateDisk() {
             const pointer = document.getElementById('score-pointer');
             const tensIndicator = document.getElementById('tens-indicator');
             const unitScore = score % 10;
-            
-            // Bereken de rotatiehoek: -90 graden is de startpositie (bovenaan bij 0)
             const angle = (unitScore * degreesPerStep) - 90;
             
-            // Pas de rotatie toe op de pijl
             pointer.style.transform = `translate(0, -50%) rotate(${angle}deg)`;
 
-            // Update de numerieke indicator
-            tensIndicator.textContent = `Huidige Score: ${score}`;
+            // Update de numerieke indicator met de juiste taaltekst
+            const indicatorText = translations[currentLang].tens_indicator;
+            tensIndicator.textContent = indicatorText + ': ' + score;
         }
 
         function changeScore(value) {
             score += value;
 
-            // Zorg dat de score binnen de 0-29 range blijft
             if (score < 0) {
                 score = 0;
             } else if (score > 29) {
@@ -255,7 +352,6 @@
             updateDisk();
         }
 
-        // NIEUWE FUNCTIE: SCORE RESET
         function resetScore() {
             score = 0;
             updateDisk();
@@ -266,7 +362,15 @@
             document.getElementById('dice-result').textContent = result;
         }
 
-        document.addEventListener('DOMContentLoaded', updateDisk);
+        // Initialisatie: Laad de pagina en controleer of er een voorkeurstaal is opgeslagen
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('gameLang');
+            if (savedLang && translations[savedLang]) {
+                currentLang = savedLang;
+            }
+            translatePage(currentLang);
+            updateDisk();
+        });
     </script>
 
 </body>
