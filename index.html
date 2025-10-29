@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Totally Nuts Game - Score Schijf & Tools</title>
+    <style>
+        /* --- BASIS STIJL --- */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        h2 {
+            color: #8B4513; /* Bruin, passend bij boomstronk */
+            margin-bottom: 20px;
+        }
+
+        /* --- SCORE SCHIJF STIJL --- */
+        .score-disk-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        #score-disk-visual {
+            position: relative;
+            width: 280px; /* Grotere schijf voor 3 ringen */
+            height: 280px;
+            border-radius: 50%;
+            background: #A0522D; /* Basis boomschijf kleur */
+            box-shadow: 0 0 0 10px #D2B48C, inset 0 0 20px rgba(0,0,0,0.5); /* Schors en diepte */
+        }
+        #score-pointer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 120px; /* Langere pijl */
+            height: 5px;
+            background-color: #C0392B; /* Rode aanwijzer */
+            transform-origin: 0% 50%; /* Draait vanaf het midden */
+            transform: translate(0, -50%) rotate(-90deg); /* Start op 0/10/20 (bovenaan) */
+            transition: transform 0.3s ease-in-out;
+            z-index: 10;
+        }
+        #score-pointer::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: -7.5px;
+            width: 0;
+            height: 0;
+            border-left: 15px solid #C0392B;
+            border-top: 7.5px solid transparent;
+            border-bottom: 7.5px solid transparent;
+        }
+        
+        /* Cijferlabels positionering */
+        .label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: 0% 50%;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.7); /* Minder opvallend */
+        }
+        
+        /* Algemene Rotatie Formule */
+        .label {
+            /* 360 / 10 = 36 graden per cijferstap */
+            --rotation: calc(var(--i) * 36deg);
+            /* Draai naar de rand, dan terugdraaien om het cijfer rechtop te houden */
+            transform: rotate(var(--rotation)) translate(var(--radius)) rotate(calc(-1 * var(--rotation)));
+        }
+
+        /* RING 1: 0 t/m 9 (Grootste Cirkel, Meest Dichtbij Pijl) */
+        .label.ring-1 {
+            --radius: 120px;
+            font-size: 1.4em;
+        }
+
+        /* RING 2: 10 t/m 19 (Middelste Cirkel) */
+        .label.ring-2 {
+            --radius: 90px;
+            font-size: 1.1em;
+        }
+        
+        /* RING 3: 20 t/m 29 (Binnenste Cirkel) */
+        .label.ring-3 {
+            --radius: 60px;
+            font-size: 0.8em;
+        }
+        
+        /* Cirkel in het midden (centrum) */
+        #center-pin {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background-color: #333;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 11;
+        }
+
+        /* HUIDIGE TIEN-TAL INDICATOR */
+        #tens-indicator {
+            font-size: 2em;
+            color: #d9534f;
+            margin-top: 15px;
+            min-height: 30px;
+            font-weight: bold;
+        }
+
+        /* KOPPELING EN KNOPPEN */
+        .control-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .control-area button {
+            padding: 12px 18px;
+            font-size: 1.1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            background-color: #5cb85c;
+            color: white;
+            transition: background-color 0.2s;
+        }
+        .control-area button:hover {
+            background-color: #4cae4c;
+        }
+
+        /* --- DOBBELSTEEN & REGELS STIJL --- */
+        .dice-container, .rules-section {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        #dice-result {
+            font-size: 3em;
+            font-weight: bold;
+            color: #f0ad4e;
+            display: inline-block;
+            min-width: 50px;
+            margin-right: 20px;
+        }
+        .dice-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        .rules-section p, .rules-section ul {
+            text-align: left;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>🌰 Totally Nuts Score Schijf (0-29)</h2>
+        <div class="score-disk-area">
+            
+            <div id="score-disk-visual">
+                <div id="center-pin"></div>
+                <div id="score-pointer"></div>
+
+                <span class="label ring-1" style="--i:0;">0</span>
+                <span class="label ring-1" style="--i:1;">1</span>
+                <span class="label ring-1" style="--i:2;">2</span>
+                <span class="label ring-1" style="--i:3;">3</span>
+                <span class="label ring-1" style="--i:4;">4</span>
+                <span class="label ring-1" style="--i:5;">5</span>
+                <span class="label ring-1" style="--i:6;">6</span>
+                <span class="label ring-1" style="--i:7;">7</span>
+                <span class="label ring-1" style="--i:8;">8</span>
+                <span class="label ring-1" style="--i:9;">9</span>
+
+                <span class="label ring-2" style="--i:0;">10</span>
+                <span class="label ring-2" style="--i:1;">11</span>
+                <span class="label ring-2" style="--i:2;">12</span>
+                <span class="label ring-2" style="--i:3;">13</span>
+                <span class="label ring-2" style="--i:4;">14</span>
+                <span class="label ring-2" style="--i:5;">15</span>
+                <span class="label ring-2" style="--i:6;">16</span>
+                <span class="label ring-2" style="--i:7;">17</span>
+                <span class="label ring-2" style="--i:8;">18</span>
+                <span class="label ring-2" style="--i:9;">19</span>
+                
+                <span class="label ring-3" style="--i:0;">20</span>
+                <span class="label ring-3" style="--i:1;">21</span>
+                <span class="label ring-3" style="--i:2;">22</span>
+                <span class="label ring-3" style="--i:3;">23</span>
+                <span class="label ring-3" style="--i:4;">24</span>
+                <span class="label ring-3" style="--i:5;">25</span>
+                <span class="label ring-3" style="--i:6;">26</span>
+                <span class="label ring-3" style="--i:7;">27</span>
+                <span class="label ring-3" style="--i:8;">28</span>
+                <span class="label ring-3" style="--i:9;">29</span>
+            </div>
+
+            <div id="tens-indicator">Huidige Score: 0</div>
+            
+            <div class="control-area">
+                <button onclick="changeScore(1)">+1</button>
+                <button onclick="changeScore(2)">+2</button>
+                <button onclick="changeScore(3)">+3</button>
+                <button onclick="changeScore(-1)">-1</button>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="dice-container">
+            <h2>🎲 Virtuele Dobbelsteen</h2>
+            <div class="dice-controls">
+                <span id="dice-result">?</span>
+                <button onclick="rollDice()">Werp Dobbelsteen (d6)</button>
+            </div>
+        </div>
+
+        <hr>
+        
+        <div class="rules-section">
+            <h2>📜 Spelregels</h2>
+            <p>Welkom bij de digitale hulpmiddelen voor Totally Nuts Game! Gebruik de scoreschijf hierboven om je score tot 29 bij te houden. Hieronder vind je een beknopte versie van de regels:</p>
+            
+            <h3>Het Doel</h3>
+            <p>Verzamel de meeste punten. Let op de tien-tallen onder de schijf om je totale score te bepalen.</p>
+        </div>
+    </div>
+
+    <script>
+        // JAVASCRIPT voor de functionaliteit
+        let score = 0;
+        const degreesPerStep = 36; // 360 graden / 10 stappen
+
+        function updateDisk() {
+            const pointer = document.getElementById('score-pointer');
+            const tensIndicator = document.getElementById('tens-indicator');
+            
+            // 1. Bepaal de resterende eenheid (0-9) voor de pijlrotatie
+            const unitScore = score % 10;
+            
+            // 2. Bereken de rotatiehoek: -90 graden is de startpositie (bovenaan)
+            const angle = (unitScore * degreesPerStep) - 90;
+            
+            // 3. Pas de rotatie toe op de pijl
+            pointer.style.transform = `translate(0, -50%) rotate(${angle}deg)`;
+
+            // 4. Update de numerieke indicator (deze toont de totale score)
+            tensIndicator.textContent = `Huidige Score: ${score}`;
+            
+            // 5. Visuele highlights (Optioneel, om de actieve ring te benadrukken)
+            const ring1 = document.querySelectorAll('.ring-1');
+            const ring2 = document.querySelectorAll('.ring-2');
+            const ring3 = document.querySelectorAll('.ring-3');
+            
+            // Reset alle kleuren
+            [...ring1, ...ring2, ...ring3].forEach(el => el.style.color = 'rgba(255, 255, 255, 0.7)');
+
+            // Bepaal welke ring actief is en kleur het actieve cijfer in die ring
+            if (score <= 9) {
+                ring1[unitScore].style.color = 'yellow';
+            } else if (score <= 19) {
+                ring2[unitScore].style.color = 'yellow';
+            } else if (score <= 29) {
+                ring3[unitScore].style.color = 'yellow';
+            }
+        }
+
+        function changeScore(value) {
+            score += value;
+
+            // Zorg dat de score binnen de 0-29 range blijft
+            if (score < 0) {
+                score = 0;
+            } else if (score > 29) {
+                score = 29;
+            }
+            
+            updateDisk(); // Roep de visuele update aan
+        }
+
+        function rollDice() {
+            // Genereert een willekeurig geheel getal tussen 1 en 6 (standaard d6)
+            const result = Math.floor(Math.random() * 6) + 1;
+            document.getElementById('dice-result').textContent = result;
+        }
+
+        // Initialiseer bij het laden van de pagina
+        document.addEventListener('DOMContentLoaded', updateDisk);
+    </script>
+
+</body>
+</html>
