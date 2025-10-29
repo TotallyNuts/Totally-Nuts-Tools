@@ -23,7 +23,7 @@
             margin-bottom: 20px;
         }
 
-        /* --- SCORE SCHIJF STIJL (ONGEWIJZIGD) --- */
+        /* --- SCORE SCHIJF STIJL (MET JOUW AFBEELDING) --- */
         .score-disk-area {
             display: flex;
             flex-direction: column;
@@ -39,18 +39,22 @@
             width: 280px;
             height: 280px;
             border-radius: 50%;
-            background: #A0522D;
-            box-shadow: 0 0 0 10px #D2B48C, inset 0 0 20px rgba(0,0,0,0.5);
+            /* JOUW AFBEELDINGSLINK VERWERKT */
+            background-image: url('https://raw.githubusercontent.com/TotallyNuts/Totally-Nuts-Tools/main/scoreschijf1.png');
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 0 0 5px #D2B48C;
         }
+        
         #score-pointer {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 120px;
+            width: 130px; 
             height: 5px;
-            background-color: #C0392B;
+            background-color: #C0392B; 
             transform-origin: 0% 50%;
-            transform: translate(0, -50%) rotate(-90deg);
+            transform: translate(0, -50%) rotate(-90deg); 
             transition: transform 0.3s ease-in-out;
             z-index: 10;
         }
@@ -66,32 +70,6 @@
             border-bottom: 7.5px solid transparent;
         }
         
-        /* Cijferlabels positionering */
-        .label {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform-origin: 0% 50%;
-            font-weight: bold;
-            color: rgba(255, 255, 255, 0.7);
-        }
-        .label {
-            --rotation: calc(var(--i) * 36deg);
-            transform: rotate(var(--rotation)) translate(var(--radius)) rotate(calc(-1 * var(--rotation)));
-        }
-        .label.ring-1 {
-            --radius: 120px;
-            font-size: 1.4em;
-        }
-        .label.ring-2 {
-            --radius: 90px;
-            font-size: 1.1em;
-        }
-        .label.ring-3 {
-            --radius: 60px;
-            font-size: 0.8em;
-        }
-        
         #center-pin {
             position: absolute;
             top: 50%;
@@ -103,6 +81,7 @@
             transform: translate(-50%, -50%);
             z-index: 11;
         }
+
         #tens-indicator {
             font-size: 2em;
             color: #d9534f;
@@ -110,6 +89,8 @@
             min-height: 30px;
             font-weight: bold;
         }
+
+        /* Knoppen */
         .control-area {
             display: flex;
             justify-content: center;
@@ -153,20 +134,22 @@
             justify-content: center;
             gap: 20px;
         }
-        
-        /* Specifieke stijl voor de dobbelsteen beschrijving */
         .dice-actions-list {
             text-align: left;
             margin-top: 15px;
         }
         .dice-actions-list li {
             margin-bottom: 5px;
-            list-style: none; /* Verwijder standaard bolletjes */
+            list-style: none;
         }
         .dice-actions-list li::before {
-            content: attr(data-list-number) ": "; /* Voeg het nummer toe */
+            content: attr(data-list-number) ": ";
             font-weight: bold;
             color: #8B4513;
+        }
+        .rules-section p, .rules-section ul {
+            text-align: left;
+            line-height: 1.6;
         }
     </style>
 </head>
@@ -179,40 +162,7 @@
             <div id="score-disk-visual">
                 <div id="center-pin"></div>
                 <div id="score-pointer"></div>
-
-                <span class="label ring-1" style="--i:0;">0</span>
-                <span class="label ring-1" style="--i:1;">1</span>
-                <span class="label ring-1" style="--i:2;">2</span>
-                <span class="label ring-1" style="--i:3;">3</span>
-                <span class="label ring-1" style="--i:4;">4</span>
-                <span class="label ring-1" style="--i:5;">5</span>
-                <span class="label ring-1" style="--i:6;">6</span>
-                <span class="label ring-1" style="--i:7;">7</span>
-                <span class="label ring-1" style="--i:8;">8</span>
-                <span class="label ring-1" style="--i:9;">9</span>
-
-                <span class="label ring-2" style="--i:0;">10</span>
-                <span class="label ring-2" style="--i:1;">11</span>
-                <span class="label ring-2" style="--i:2;">12</span>
-                <span class="label ring-2" style="--i:3;">13</span>
-                <span class="label ring-2" style="--i:4;">14</span>
-                <span class="label ring-2" style="--i:5;">15</span>
-                <span class="label ring-2" style="--i:6;">16</span>
-                <span class="label ring-2" style="--i:7;">17</span>
-                <span class="label ring-2" style="--i:8;">18</span>
-                <span class="label ring-2" style="--i:9;">19</span>
-                
-                <span class="label ring-3" style="--i:0;">20</span>
-                <span class="label ring-3" style="--i:1;">21</span>
-                <span class="label ring-3" style="--i:2;">22</span>
-                <span class="label ring-3" style="--i:3;">23</span>
-                <span class="label ring-3" style="--i:4;">24</span>
-                <span class="label ring-3" style="--i:5;">25</span>
-                <span class="label ring-3" style="--i:6;">26</span>
-                <span class="label ring-3" style="--i:7;">27</span>
-                <span class="label ring-3" style="--i:8;">28</span>
-                <span class="label ring-3" style="--i:9;">29</span>
-            </div>
+                </div>
 
             <div id="tens-indicator">Huidige Score: 0</div>
             
@@ -250,14 +200,11 @@
         
         <div class="rules-section">
             <h2>📜 Spelregels</h2>
-            <p>Welkom bij de digitale hulpmiddelen voor Totally Nuts Game! Gebruik de scoreschijf hierboven om je score tot 29 bij te houden. Hieronder vind je een beknopte versie van de regels:</p>
+            <p>Welkom bij de digitale hulpmiddelen voor Totally Nuts Game! Gebruik de scoreschijf hierboven om je score tot 29 bij te houden.</p>
             
-            <h3>Het Doel</h3>
-            <p>Verzamel de meeste punten. Let op de tien-tallen onder de schijf om je totale score te bepalen.</p>
-
             <h3>Een Beurt Spelen</h3>
             <ul>
-                <li>**Werp.** Gebruik de virtuele dobbelsteen om een actie te bepalen (zie de lijst hierboven).</li>
+                <li>**Werp.** Gebruik de virtuele dobbelsteen om een actie te bepalen.</li>
                 <li>**Actie.** Volg de instructies van de worp.</li>
                 <li>**Scoren.** Gebruik de knoppen (+1, +2, +3, -1) om je score direct bij te werken op de schijf.</li>
             </ul>
@@ -266,35 +213,27 @@
 
     <script>
         let score = 0;
-        const degreesPerStep = 36;
+        const degreesPerStep = 36; // 360 graden / 10 stappen
 
         function updateDisk() {
             const pointer = document.getElementById('score-pointer');
             const tensIndicator = document.getElementById('tens-indicator');
             const unitScore = score % 10;
+            
+            // Bereken de rotatiehoek: -90 graden is de startpositie (bovenaan bij 0)
             const angle = (unitScore * degreesPerStep) - 90;
             
+            // Pas de rotatie toe op de pijl
             pointer.style.transform = `translate(0, -50%) rotate(${angle}deg)`;
-            tensIndicator.textContent = `Huidige Score: ${score}`;
-            
-            const ring1 = document.querySelectorAll('.ring-1');
-            const ring2 = document.querySelectorAll('.ring-2');
-            const ring3 = document.querySelectorAll('.ring-3');
-            
-            [...ring1, ...ring2, ...ring3].forEach(el => el.style.color = 'rgba(255, 255, 255, 0.7)');
 
-            if (score <= 9) {
-                ring1[unitScore].style.color = 'yellow';
-            } else if (score <= 19) {
-                ring2[unitScore].style.color = 'yellow';
-            } else if (score <= 29) {
-                ring3[unitScore].style.color = 'yellow';
-            }
+            // Update de numerieke indicator
+            tensIndicator.textContent = `Huidige Score: ${score}`;
         }
 
         function changeScore(value) {
             score += value;
 
+            // Zorg dat de score binnen de 0-29 range blijft
             if (score < 0) {
                 score = 0;
             } else if (score > 29) {
