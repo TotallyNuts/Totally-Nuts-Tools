@@ -3,135 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="app-title">Boomhut Kasteel Tools</title>
+    <title id="app-title">Totally Nuts Game - Score Schijf & Tools</title>
     <style>
-        /* --- BASIS STIJL (Thema: Bos & Hout) --- */
+        /* --- BASIS STIJL (Zal overschreven worden door .dark-mode) --- */
         body {
-            font-family: 'Garamond', 'Georgia', serif; /* Klassieker lettertype */
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #e0f7fa; /* Zeer lichtblauw/groen (lichte hemel) */
-            color: #2e2d26; /* Donker hout / aarde kleur */
+            background-color: #f4f4f9; /* Lichtgrijze achtergrond */
+            color: #333; /* Donkere tekst */
             text-align: center;
-            transition: background-color 0.4s, color 0.4s;
+            transition: background-color 0.3s, color 0.3s; /* Vloeiende overgang */
         }
         .container {
             max-width: 600px;
             margin: 0 auto;
         }
         h2 {
-            color: #38761d; /* Donkergroen (bladeren) */
+            color: #8B4513;
             margin-bottom: 20px;
-            border-bottom: 2px solid #8b4513; /* Houtlijn */
-            padding-bottom: 5px;
         }
         
-        /* --- DONKERE MODUS STIJLEN (Thema: Nachtelijk Bos) --- */
+        /* --- DONKERE MODUS STIJLEN --- */
         .dark-mode body {
-            background-color: #1a231a; /* Donker bos groen */
-            color: #f0e68c; /* Zacht goud / maanlicht */
+            background-color: #121212; /* Zeer donkergrijs */
+            color: #e0e0e0; /* Lichte tekst */
         }
         .dark-mode h2 {
-            color: #a9d18e; /* Lichter bladgroen */
-            border-bottom-color: #6a5a40;
+            color: #D2B48C; /* Lichte bruine kleur */
         }
         .dark-mode .score-disk-area,
         .dark-mode .dice-container,
         .dark-mode .rules-section {
-            background-color: #2c3e2c; /* Donkere, mosgroene panelen */
-            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+            background-color: #1e1e1e; /* Donkere panelen */
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
         }
         .dark-mode .acorn-counter-area, 
         .dark-mode .level-tracker {
-            background-color: #384c38;
-            border-color: #8b4513; /* Donker hout */
+            background-color: #2c2c2c;
+            border-color: #6a5a40;
+        }
+        .dark-mode .level-tracker {
+            background-color: #243a42;
+            border-color: #306c7e;
         }
         .dark-mode #tens-indicator, .dark-mode #dice-result {
-            color: #ffd700; /* Goud highlight */
+            color: #ff9800; /* Oranje highlight */
         }
         .dark-mode .dice-actions-list li::before {
-            color: #ffd700;
-        }
-        .dark-mode #leader-level, .dark-mode #camp-level, .dark-mode #acorn-count {
-            color: #ffd700 !important; /* Goud voor de trackers */
+            color: #D2B48C;
         }
 
-        /* --- SCORE SCHIJF STIJL --- */
+        /* --- NIVEAU CIJFERS KLEUR CORRECTIE (BRUIN IN BEIDE MODI) --- */
+        /* Zorgt dat alle niveaucijfers goed zichtbaar zijn in Dark Mode */
+        .dark-mode #leader-level, .dark-mode #camp-level, .dark-mode #acorn-count {
+            color: #D2B48C !important; /* Gebruik lichte bruin voor de cijfers van alle trackers in Dark Mode */
+        }
+        
+        /* --- SCHIJF STIJL --- */
         .score-disk-area {
-            background-color: #f7fff7;
-            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         #score-disk-visual {
-            box-shadow: 0 0 0 5px #38761d; /* Groene rand */
+            position: relative;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            /* JOUW AFBEELDINGSLINK VERWERKT */
+            background-image: url('https://raw.githubusercontent.com/TotallyNuts/Totally-Nuts-Tools/main/scoreschijf1.png');
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 0 0 5px #D2B48C;
         }
+        
         #score-pointer {
-            background-color: #b85038; /* Herfstrood */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 130px; 
+            height: 5px;
+            background-color: #C0392B; 
+            transform-origin: 0% 50%;
+            transform: translate(0, -50%) rotate(-90deg); 
+            transition: transform 0.3s ease-in-out;
+            z-index: 10;
         }
         #score-pointer::after {
-            border-left-color: #b85038;
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: -7.5px;
+            width: 0;
+            height: 0;
+            border-left: 15px solid #C0392B;
+            border-top: 7.5px solid transparent;
+            border-bottom: 7.5px solid transparent;
         }
+        
         #center-pin {
-            background-color: #8b4513; /* Bruin */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background-color: #333;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 11;
         }
+
         #tens-indicator {
-            color: #38761d; /* Groen */
+            font-size: 2em;
+            color: #d9534f;
+            margin-top: 15px;
+            min-height: 30px;
+            font-weight: bold;
         }
 
         /* Knoppen Groep */
+        .control-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap; 
+            gap: 10px;
+            margin-top: 20px;
+        }
         .control-area button {
-            background-color: #8b4513; /* Hout/Bruin */
-            border: 2px solid #6a492f;
+            padding: 10px 15px;
+            font-size: 1.0em;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            transition: background-color 0.2s;
         }
-        .control-area button:hover {
-            background-color: #6a492f;
-        }
+        
         .control-area .score-button {
-            background-color: #5cb85c; /* Groen */
+            background-color: #5cb85c; 
+        }
+        .control-area .score-button:hover {
+            background-color: #4cae4c;
         }
         .control-area .reset-button {
-            background-color: #b85038; /* Herfsttint */
+            background-color: #f0ad4e; 
+        }
+        .control-area .reset-button:hover {
+            background-color: #ec971f;
         }
         .control-area .language-button {
-            background-color: #4a6984; /* Blauw/Grijs */
+            background-color: #3498db; 
+        }
+        .control-area .language-button:hover {
+            background-color: #2980b9;
         }
         .control-area .dark-mode-button {
-            background-color: #4b4b4b; 
+            background-color: #6a6a6a; 
+        }
+        .control-area .dark-mode-button:hover {
+            background-color: #4a4a4a;
         }
 
-        /* --- RESOURCE EN NIVEAU TELLER STIJL --- */
+        /* --- EIKEL & NIVEAU TELLER STIJL --- */
+        .resource-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
         .acorn-counter-area, .level-tracker {
-            background-color: #f7fff7;
-            border: 2px solid #8b4513; 
+            background-color: #fffff0; 
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 2px solid #D2B48C;
+            text-align: center;
+            transition: background-color 0.3s, border-color 0.3s;
         }
         .level-tracker {
-            background-color: #e6ffe6; /* Lichtgroene basis */
-            border-color: #38761d;
+            background-color: #e0f7fa; 
+            border-color: #00bcd4;
+        }
+        .tracker-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
         }
         .tracker-controls .level-display {
-            color: #8b4513; /* Donkerbruin voor levels */
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #A0522D; /* Bruin voor alle levels in Light Mode */
+            min-width: 40px;
+            transition: color 0.3s;
         }
         .tracker-controls button {
-            background-color: #ffd700; /* Goud/Eikelkleur */
-            color: #8b4513; /* Donkere tekst op Goud */
-            font-weight: bold;
-        }
-        .tracker-controls button:hover {
-            background-color: #e6c300;
+            background-color: #A0522D;
+            font-size: 1.2em;
+            padding: 5px 15px;
         }
         .tracker-controls .reset-level-button {
-            background-color: #b85038; /* Herfst/Rood-bruin */
-            color: white;
+            background-color: #333;
+        }
+        .tracker-controls button:hover {
+            background-color: #8B4513;
         }
 
         /* --- DOBBELSTEEN & REGELS STIJL --- */
         .dice-container, .rules-section {
-            background-color: #f7fff7;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
         }
         #dice-result {
-            color: #ffd700; /* Goud resultaat */
+            font-size: 3em;
+            font-weight: bold;
+            color: #f0ad4e;
+            display: inline-block;
+            min-width: 50px;
+            margin-right: 20px;
+        }
+        .dice-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        .dice-actions-list {
+            text-align: left;
+            margin-top: 15px;
         }
         .dice-actions-list li::before {
-            color: #8b4513;
+            content: attr(data-list-number) ": ";
+            font-weight: bold;
+            color: #8B4513;
+        }
+        .rules-section p, .rules-section ul {
+            text-align: left;
+            line-height: 1.6;
         }
     </style>
 </head>
@@ -140,10 +260,10 @@
     <div class="container">
         <div class="control-area">
             <button onclick="toggleLanguage()" id="lang-button" class="language-button">Switch to English</button>
-            <button onclick="toggleDarkMode()" id="dark-mode-button" class="dark-mode-button">🌙 Bos-Nacht Modus</button>
+            <button onclick="toggleDarkMode()" id="dark-mode-button" class="dark-mode-button">🌙 Donkere Modus</button>
         </div>
 
-        <h2 id="score-title">🌰 Blad-Score Schijf (0-29)</h2>
+        <h2 id="score-title">🌰 Totally Nuts Score Schijf (0-29)</h2>
         <div class="score-disk-area">
             
             <div id="score-disk-visual">
@@ -158,7 +278,7 @@
                 <button onclick="changeScore(2)" class="score-button">+2</button>
                 <button onclick="changeScore(3)" class="score-button">+3</button>
                 <button onclick="changeScore(-1)" class="score-button">-1</button>
-                <button onclick="resetScore()" id="reset-button" class="reset-button">Score Verval (0)</button>
+                <button onclick="resetScore()" id="reset-button" class="reset-button">Score Reset (0)</button>
             </div>
         </div>
 
@@ -167,7 +287,7 @@
         <div class="resource-section">
             
             <div class="acorn-counter-area">
-                <h2 id="acorn-title">⚜️ Eikel Voorraad</h2>
+                <h2 id="acorn-title">💰 Eikel Teller</h2>
                 <div class="tracker-controls acorn-controls">
                     <button onclick="changeAcornCount(-1)" id="acorn-minus-button">-1</button>
                     <span id="acorn-count" class="level-display">10</span>
@@ -177,20 +297,20 @@
             </div>
 
             <div class="level-tracker">
-                <h2 id="leader-title">👑 Ridder Rang (1-8)</h2>
+                <h2 id="leader-title">👑 Leider Niveau (1-8)</h2>
                 <div class="tracker-controls">
                     <button onclick="changeLevel('leader', 1)" id="leader-plus-button">+1</button>
                     <span id="leader-level" class="level-display">1</span>
-                    <button onclick="resetLevel('leader')" id="leader-reset-button" class="reset-level-button">Degradatie (1)</button>
+                    <button onclick="resetLevel('leader')" id="leader-reset-button" class="reset-level-button">Reset (1)</button>
                 </div>
             </div>
 
             <div class="level-tracker">
-                <h2 id="camp-title">🌳 Klimvaardigheid (1-8)</h2>
+                <h2 id="camp-title">⛺ Trainingskamp Niveau (1-8)</h2>
                 <div class="tracker-controls">
                     <button onclick="changeLevel('camp', 1)" id="camp-plus-button">+1</button>
                     <span id="camp-level" class="level-display">1</span>
-                    <button onclick="resetLevel('camp')" id="camp-reset-button" class="reset-level-button">Terug naar Basis (1)</button>
+                    <button onclick="resetLevel('camp')" id="camp-reset-button" class="reset-level-button">Reset (1)</button>
                 </div>
             </div>
 
@@ -199,21 +319,21 @@
         <hr>
 
         <div class="dice-container">
-            <h2 id="dice-title">🎲 Bos Dobbelsteen</h2>
+            <h2 id="dice-title">🎲 Virtuele Dobbelsteen</h2>
             <div class="dice-controls">
                 <span id="dice-result">?</span>
-                <button onclick="rollDice()" id="roll-button">Werp Eikel (d6)</button>
+                <button onclick="rollDice()" id="roll-button">Werp Dobbelsteen (d6)</button>
             </div>
 
             <div class="dice-actions-list">
                 <h3 id="actions-title">Acties per Worp:</h3>
                 <ul>
-                    <li data-list-number="1" data-trans-key="dice_1">Elk boomhutkasteel dobbelt met 1 D6 en telt het aantal ogen op bij de kracht van het leger</li>
-                    <li data-list-number="2" data-trans-key="dice_2">Er kunnen geen Knappe Eekhoorns gespeeld worden deze ronde</li>
-                    <li data-list-number="3" data-trans-key="dice_3">Oude Eiken kunnen geen duistere eekhoorns bekeren tot ridder deze ronde</li>
-                    <li data-list-number="4" data-trans-key="dice_4">Kiezen: **schatkaarten** pakken of ridder **+1 Rang** geven</li>
-                    <li data-list-number="5" data-trans-key="dice_5">Elke speler pakt blind een **Veldslagkaart**</li>
-                    <li data-list-number="6" data-trans-key="dice_6">Dubbele kracht **Ridder** (of sterkste ridder bij meer dan 2 spelers) deze ronde</li>
+                    <li data-list-number="1" data-trans-key="dice_1">Elk koninkrijk dobbelt met 1 D6 en telt het aantal ogen op bij de kracht van het leger</li>
+                    <li data-list-number="2" data-trans-key="dice_2">Er kunnen geen cuties gespeeld worden deze ronde</li>
+                    <li data-list-number="3" data-trans-key="dice_3">Priesters kunnen demonen niet bekeren tot engel deze ronde</li>
+                    <li data-list-number="4" data-trans-key="dice_4">Kiezen: **krachtkaarten** pakken of leider **+1 omhoog trainen**</li>
+                    <li data-list-number="5" data-trans-key="dice_5">Elke speler pakt blind een **gevechtskaart**</li>
+                    <li data-list-number="6" data-trans-key="dice_6">Dubbele kracht **leider** (of sterkste leider bij meer dan 2 spelers) deze ronde</li>
                 </ul>
             </div>
         </div>
@@ -221,8 +341,8 @@
         <hr>
         
         <div class="rules-section">
-            <h2 id="rules-title">📜 Bos Regels</h2>
-            <p id="rules-intro">Welkom bij de digitale hulpmiddelen voor het Eekhoorn Ridders spel! Gebruik de blad-scoreschijf hierboven om je score tot 29 bij te houden.</p>
+            <h2 id="rules-title">📜 Spelregels</h2>
+            <p id="rules-intro">Welkom bij de digitale hulpmiddelen voor Totally Nuts Game! Gebruik de scoreschijf hierboven om je score tot 29 bij te houden.</p>
             
             <h3 id="rules-subtitle">Een Beurt Spelen</h3>
             <ul>
@@ -245,59 +365,59 @@
         const minLevel = 1;
         const degreesPerStep = 36;
         
-        // --- TAAL VERTALINGEN (THEMA AANGEPAST) ---
+        // --- TAAL VERTALINGEN ---
         const translations = {
             'en': {
-                'app_title': 'Treehouse Castle Tools',
+                'app_title': 'Totally Nuts Game - Score Disc & Tools',
                 'lang_button': 'Schakel naar Nederlands',
-                'dark_mode_on': '☀️ Light Mode',
-                'dark_mode_off': '🌙 Forest-Night Mode',
-                'score_title': '🌰 Leaf-Score Disc (0-29)',
+                'dark_mode_on': '☀️ Lichte Modus',
+                'dark_mode_off': '🌙 Donkere Modus',
+                'score_title': '🌰 Totally Nuts Score Disc (0-29)',
                 'tens_indicator': 'Current Score:',
-                'reset_button': 'Score Decay (0)',
-                'acorn_title': '⚜️ Acorn Stash',
+                'reset_button': 'Score Reset (0)',
+                'acorn_title': '💰 Acorn Counter',
                 'acorn_info': 'Start with 10 Acorns. Max 20.',
-                'leader_title': '👑 Knight Rank (1-8)',
-                'camp_title': '🌳 Climbing Skill (1-8)',
-                'dice_title': '🎲 Forest Die',
-                'roll_button': 'Roll Acorn (d6)',
+                'leader_title': '👑 Leader Level (1-8)',
+                'camp_title': '⛺ Training Camp Level (1-8)',
+                'dice_title': '🎲 Virtual Die',
+                'roll_button': 'Roll Die (d6)',
                 'actions_title': 'Actions per Roll:',
-                'dice_1': 'Each treehouse castle rolls 1 D6 and adds the number of pips to the strength of the army',
-                'dice_2': 'No Cute Squirrels can be played this round',
-                'dice_3': 'Old Oaks cannot convert dark squirrels to knights this round',
-                'dice_4': 'Choose: take treasure cards or give knight +1 Rank',
-                'dice_5': 'Every player blindly draws a Battle Card',
-                'dice_6': 'Double Knight strength (or strongest knight if >2 players) this round',
-                'rules_title': '📜 Forest Rules',
-                'rules_intro': 'Welcome to the digital tools for the Squirrel Knights game! Use the leaf-score disc above to track your score up to 29.',
+                'dice_1': 'Each kingdom rolls 1 D6 and adds the number of pips to the strength of the army',
+                'dice_2': 'No cuties can be played this round',
+                'dice_3': 'Priests cannot convert demons to angels this round',
+                'dice_4': 'Choose: take power cards or train leader +1 up',
+                'dice_5': 'Every player blindly draws a combat card',
+                'dice_6': 'Double leader strength (or strongest leader if >2 players) this round',
+                'rules_title': '📜 Game Rules',
+                'rules_intro': 'Welcome to the Totally Nuts Game digital tools! Use the score disc above to track your score up to 29.',
                 'rules_subtitle': 'Playing a Turn',
                 'rule_1': '**Roll.** Use the virtual die to determine an action.',
                 'rule_2': '**Action.** Follow the instructions of the roll.',
                 'rule_3': '**Score.** Use the buttons (+1, +2, +3, -1) to update your score directly on the disc.'
             },
             'nl': {
-                'app_title': 'Boomhut Kasteel Tools',
+                'app_title': 'Totally Nuts Game - Score Schijf & Tools',
                 'lang_button': 'Switch to English',
-                'dark_mode_on': '☀️ Lichte Modus',
-                'dark_mode_off': '🌙 Bos-Nacht Modus',
-                'score_title': '🌰 Blad-Score Schijf (0-29)',
+                'dark_mode_on': '☀️ Light Mode',
+                'dark_mode_off': '🌙 Donkere Modus',
+                'score_title': '🌰 Totally Nuts Score Schijf (0-29)',
                 'tens_indicator': 'Huidige Score:',
-                'reset_button': 'Score Verval (0)',
-                'acorn_title': '⚜️ Eikel Voorraad',
+                'reset_button': 'Score Reset (0)',
+                'acorn_title': '💰 Eikel Teller',
                 'acorn_info': 'Start met 10 eikels. Maximaal 20.',
-                'leader_title': '👑 Ridder Rang (1-8)',
-                'camp_title': '🌳 Klimvaardigheid (1-8)',
-                'dice_title': '🎲 Bos Dobbelsteen',
-                'roll_button': 'Werp Eikel (d6)',
+                'leader_title': '👑 Leider Niveau (1-8)',
+                'camp_title': '⛺ Trainingskamp Niveau (1-8)',
+                'dice_title': '🎲 Virtuele Dobbelsteen',
+                'roll_button': 'Werp Dobbelsteen (d6)',
                 'actions_title': 'Acties per Worp:',
-                'dice_1': 'Elk boomhutkasteel dobbelt met 1 D6 en telt het aantal ogen op bij de kracht van het leger',
-                'dice_2': 'Er kunnen geen Knappe Eekhoorns gespeeld worden deze ronde',
-                'dice_3': 'Oude Eiken kunnen geen duistere eekhoorns bekeren tot ridder deze ronde',
-                'dice_4': 'Kiezen: **schatkaarten** pakken of ridder **+1 Rang** geven',
-                'dice_5': 'Elke speler pakt blind een **Veldslagkaart**',
-                'dice_6': 'Dubbele kracht **Ridder** (of sterkste ridder bij meer dan 2 spelers) deze ronde',
-                'rules_title': '📜 Bos Regels',
-                'rules_intro': 'Welkom bij de digitale hulpmiddelen voor het Eekhoorn Ridders spel! Gebruik de blad-scoreschijf hierboven om je score tot 29 bij te houden.',
+                'dice_1': 'Elk koninkrijk dobbelt met 1 D6 en telt het aantal ogen op bij de kracht van het leger',
+                'dice_2': 'Er kunnen geen cuties gespeeld worden deze ronde',
+                'dice_3': 'Priesters kunnen demonen niet bekeren tot engel deze ronde',
+                'dice_4': 'Kiezen: **krachtkaarten** pakken of leider **+1 omhoog trainen**',
+                'dice_5': 'Elke speler pakt blind een **gevechtskaart**',
+                'dice_6': 'Dubbele kracht **leider** (of sterkste leider bij meer dan 2 spelers) deze ronde',
+                'rules_title': '📜 Spelregels',
+                'rules_intro': 'Welkom bij de digitale hulpmiddelen voor Totally Nuts Game! Gebruik de scoreschijf hierboven om je score tot 29 bij te houden.',
                 'rules_subtitle': 'Een Beurt Spelen',
                 'rule_1': '**Werp.** Gebruik de virtuele dobbelsteen om een actie te bepalen.',
                 'rule_2': '**Actie.** Volg de instructies van de worp.',
