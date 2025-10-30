@@ -55,7 +55,6 @@
         }
 
         /* --- NIVEAU CIJFERS KLEUR CORRECTIE (BRUIN IN BEIDE MODI) --- */
-        /* Zorgt dat alle niveaucijfers goed zichtbaar zijn in Dark Mode */
         .dark-mode #leader-level, .dark-mode #camp-level, .dark-mode #acorn-count {
             color: #D2B48C !important; /* Gebruik lichte bruin voor de cijfers van alle trackers in Dark Mode */
         }
@@ -209,9 +208,11 @@
             background-color: #A0522D;
             font-size: 1.2em;
             padding: 5px 15px;
+            /* De volgende klasse zorgt ervoor dat de knoppen van levels en eikels hetzelfde zijn */
         }
-        .tracker-controls .reset-level-button {
-            background-color: #333;
+        .tracker-controls .level-reset-button {
+             /* Nu gebruiken we de -1 knop, maar als je een aparte reset wilt: */
+             background-color: #333; 
         }
         .tracker-controls button:hover {
             background-color: #8B4513;
@@ -299,18 +300,18 @@
             <div class="level-tracker">
                 <h2 id="leader-title">👑 Leider Niveau (1-8)</h2>
                 <div class="tracker-controls">
-                    <button onclick="changeLevel('leader', 1)" id="leader-plus-button">+1</button>
+                    <button onclick="changeLevel('leader', -1)" id="leader-minus-button">-1</button>
                     <span id="leader-level" class="level-display">1</span>
-                    <button onclick="resetLevel('leader')" id="leader-reset-button" class="reset-level-button">Reset (1)</button>
+                    <button onclick="changeLevel('leader', 1)" id="leader-plus-button">+1</button>
                 </div>
             </div>
 
             <div class="level-tracker">
                 <h2 id="camp-title">⛺ Trainingskamp Niveau (1-8)</h2>
                 <div class="tracker-controls">
-                    <button onclick="changeLevel('camp', 1)" id="camp-plus-button">+1</button>
+                    <button onclick="changeLevel('camp', -1)" id="camp-minus-button">-1</button>
                     <span id="camp-level" class="level-display">1</span>
-                    <button onclick="resetLevel('camp')" id="camp-reset-button" class="reset-level-button">Reset (1)</button>
+                    <button onclick="changeLevel('camp', 1)" id="camp-plus-button">+1</button>
                 </div>
             </div>
 
@@ -509,8 +510,7 @@
 
         function updateAcornCount() {
             document.getElementById('acorn-count').textContent = acornCount;
-            document.getElementById('acorn-minus-button').disabled = (acornCount <= 0);
-            document.getElementById('acorn-plus-button').disabled = (acornCount >= maxAcorns);
+            // Knoppen worden gecontroleerd in de functie changeAcornCount
         }
 
         function changeAcornCount(value) {
@@ -519,17 +519,25 @@
             else if (newCount > maxAcorns) { newCount = maxAcorns; }
             acornCount = newCount;
             updateAcornCount();
+            
+            // Deactiveer knoppen indien limieten bereikt zijn (optioneel, maar goed voor UI)
+            document.getElementById('acorn-minus-button').disabled = (acornCount <= 0);
+            document.getElementById('acorn-plus-button').disabled = (acornCount >= maxAcorns);
         }
         
-        // --- NIVEAU TRACKER FUNCTIES ---
+        // --- NIVEAU TRACKER FUNCTIES (AANGEPAST) ---
 
         function updateLevelDisplay(type) {
             const level = (type === 'leader') ? leaderLevel : campLevel;
             const element = document.getElementById(type + '-level');
             const plusButton = document.getElementById(type + '-plus-button');
+            const minusButton = document.getElementById(type + '-minus-button');
             
             element.textContent = level;
+            
+            // Zorgt ervoor dat de knoppen uitgeschakeld worden bij de limieten
             plusButton.disabled = (level >= maxLevel);
+            minusButton.disabled = (level <= minLevel);
         }
 
         function changeLevel(type, value) {
@@ -544,12 +552,8 @@
             
             updateLevelDisplay(type);
         }
-
-        function resetLevel(type) {
-            if (type === 'leader') { leaderLevel = minLevel; } 
-            else { campLevel = minLevel; }
-            updateLevelDisplay(type);
-        }
+        
+        // De resetLevel functie is niet meer nodig, maar kan teruggezet worden indien gewenst.
 
         // --- DOBBELSTEEN FUNCTIE ---
 
@@ -570,6 +574,7 @@
                 currentLang = savedLang;
             }
             
+            // Render de elementen
             translatePage(currentLang);
             updateDisk();
             updateAcornCount();
