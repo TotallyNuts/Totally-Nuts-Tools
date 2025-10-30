@@ -39,7 +39,6 @@
             width: 280px;
             height: 280px;
             border-radius: 50%;
-            /* JOUW AFBEELDINGSLINK VERWERKT */
             background-image: url('https://raw.githubusercontent.com/TotallyNuts/Totally-Nuts-Tools/main/scoreschijf1.png');
             background-size: cover;
             background-position: center;
@@ -95,7 +94,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-wrap: wrap; /* Belangrijk voor kleine schermen */
+            flex-wrap: wrap; 
             gap: 10px;
             margin-top: 20px;
         }
@@ -110,22 +109,53 @@
         }
         
         .control-area .score-button {
-            background-color: #5cb85c; /* Groen */
+            background-color: #5cb85c; 
         }
         .control-area .score-button:hover {
             background-color: #4cae4c;
         }
         .control-area .reset-button {
-            background-color: #f0ad4e; /* Oranje/Geel */
+            background-color: #f0ad4e; 
         }
         .control-area .reset-button:hover {
             background-color: #ec971f;
         }
         .control-area .language-button {
-            background-color: #3498db; /* Blauw */
+            background-color: #3498db; 
         }
         .control-area .language-button:hover {
             background-color: #2980b9;
+        }
+
+        /* --- EIKEL TELLER STIJL --- */
+        .acorn-counter-area {
+            background-color: #fffff0; /* Crème-kleurige achtergrond */
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 2px solid #D2B48C;
+        }
+        .acorn-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        #acorn-count {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #A0522D; /* Bruin */
+            min-width: 50px;
+        }
+        .acorn-controls button {
+            background-color: #A0522D;
+            font-size: 1.5em;
+            padding: 5px 15px;
+        }
+        .acorn-controls button:hover {
+            background-color: #8B4513;
         }
 
 
@@ -198,6 +228,18 @@
 
         <hr>
 
+        <div class="acorn-counter-area">
+            <h2 id="acorn-title">💰 Eikel Teller</h2>
+            <div class="acorn-controls">
+                <button onclick="changeAcornCount(-1)" id="acorn-minus-button">-1</button>
+                <span id="acorn-count">10</span>
+                <button onclick="changeAcornCount(1)" id="acorn-plus-button">+1</button>
+            </div>
+            <p id="acorn-info">Start met 10 eikels. Maximaal 20.</p>
+        </div>
+
+        <hr>
+
         <div class="dice-container">
             <h2 id="dice-title">🎲 Virtuele Dobbelsteen</h2>
             <div class="dice-controls">
@@ -235,8 +277,10 @@
 
     <script>
         let score = 0;
+        let acornCount = 10; // Start met 10 eikels
+        const maxAcorns = 20;
         const degreesPerStep = 36;
-        let currentLang = 'nl'; // Starttaal
+        let currentLang = 'nl'; 
 
         // Alle vertaalbare teksten verzameld in één object
         const translations = {
@@ -246,6 +290,8 @@
                 'score_title': '🌰 Totally Nuts Score Disc (0-29)',
                 'tens_indicator': 'Current Score:',
                 'reset_button': 'Score Reset (0)',
+                'acorn_title': '💰 Acorn Counter',
+                'acorn_info': 'Start with 10 Acorns. Max 20.',
                 'dice_title': '🎲 Virtual Die',
                 'roll_button': 'Roll Die (d6)',
                 'actions_title': 'Actions per Roll:',
@@ -268,6 +314,8 @@
                 'score_title': '🌰 Totally Nuts Score Schijf (0-29)',
                 'tens_indicator': 'Huidige Score:',
                 'reset_button': 'Score Reset (0)',
+                'acorn_title': '💰 Eikel Teller',
+                'acorn_info': 'Start met 10 eikels. Maximaal 20.',
                 'dice_title': '🎲 Virtuele Dobbelsteen',
                 'roll_button': 'Werp Dobbelsteen (d6)',
                 'actions_title': 'Acties per Worp:',
@@ -289,22 +337,24 @@
         function translatePage(lang) {
             const t = translations[lang];
             
-            // Vertaling van de titel en knoppen
+            // Vertaling van de elementen
             document.getElementById('app-title').textContent = t.app_title;
             document.getElementById('lang-button').textContent = t.lang_button;
             document.getElementById('score-title').textContent = t.score_title;
             document.getElementById('reset-button').textContent = t.reset_button;
+            document.getElementById('acorn-title').textContent = t.acorn_title;
+            document.getElementById('acorn-info').textContent = t.acorn_info;
             document.getElementById('dice-title').textContent = t.dice_title;
             document.getElementById('roll-button').textContent = t.roll_button;
             document.getElementById('actions-title').textContent = t.actions_title;
             document.getElementById('rules-title').textContent = t.rules_title;
             document.getElementById('rules-intro').textContent = t.rules_intro;
             document.getElementById('rules-subtitle').textContent = t.rules_subtitle;
-            document.getElementById('rule-1').innerHTML = t.rule_1; // Gebruik innerHTML vanwege de **vetgedrukte** tekst
+            document.getElementById('rule-1').innerHTML = t.rule_1;
             document.getElementById('rule-2').innerHTML = t.rule_2;
             document.getElementById('rule-3').innerHTML = t.rule_3;
 
-            // Vertaling van de dobbelsteen acties (via data-trans-key)
+            // Vertaling van de dobbelsteen acties
             for (let i = 1; i <= 6; i++) {
                 const li = document.querySelector(`[data-trans-key="dice_${i}"]`);
                 if (li) {
@@ -312,11 +362,10 @@
                 }
             }
             
-            // Update de numerieke indicator (alleen de tekst 'Huidige Score:' of 'Current Score:')
+            // Update de scoreschijf indicator (alleen de tekst)
             const scoreText = document.getElementById('tens-indicator').textContent.split(':');
             document.getElementById('tens-indicator').textContent = t.tens_indicator + ': ' + scoreText[scoreText.length - 1].trim();
 
-            // Sla de voorkeurstaal op in de browser (optioneel, voor de volgende keer)
             localStorage.setItem('gameLang', lang);
         }
 
@@ -325,7 +374,7 @@
             translatePage(currentLang);
         }
 
-        // --- SCORESCHIJF & DOBBELSTEEN FUNCTIES (ONGEWIJZIGD) ---
+        // --- SCORESCHIJF FUNCTIES ---
         
         function updateDisk() {
             const pointer = document.getElementById('score-pointer');
@@ -335,7 +384,6 @@
             
             pointer.style.transform = `translate(0, -50%) rotate(${angle}deg)`;
 
-            // Update de numerieke indicator met de juiste taaltekst
             const indicatorText = translations[currentLang].tens_indicator;
             tensIndicator.textContent = indicatorText + ': ' + score;
         }
@@ -357,12 +405,38 @@
             updateDisk();
         }
 
+        // --- EIKEL TELLER FUNCTIES ---
+
+        function updateAcornCount() {
+            document.getElementById('acorn-count').textContent = acornCount;
+            // Eikels kunnen niet negatief zijn, dus zet de min-knop uit als de teller 0 is
+            document.getElementById('acorn-minus-button').disabled = (acornCount <= 0);
+            // Je kunt niet boven de 20 uitkomen, dus zet de plus-knop uit als de teller 20 is
+            document.getElementById('acorn-plus-button').disabled = (acornCount >= maxAcorns);
+        }
+
+        function changeAcornCount(value) {
+            let newCount = acornCount + value;
+
+            // Limieten toepassen (0-20)
+            if (newCount < 0) {
+                newCount = 0;
+            } else if (newCount > maxAcorns) {
+                newCount = maxAcorns;
+            }
+            
+            acornCount = newCount;
+            updateAcornCount();
+        }
+
+        // --- DOBBELSTEEN FUNCTIE ---
+
         function rollDice() {
             const result = Math.floor(Math.random() * 6) + 1;
             document.getElementById('dice-result').textContent = result;
         }
 
-        // Initialisatie: Laad de pagina en controleer of er een voorkeurstaal is opgeslagen
+        // Initialisatie: Laad de pagina en controleer de taal en scores
         document.addEventListener('DOMContentLoaded', () => {
             const savedLang = localStorage.getItem('gameLang');
             if (savedLang && translations[savedLang]) {
@@ -370,6 +444,7 @@
             }
             translatePage(currentLang);
             updateDisk();
+            updateAcornCount(); // Initialiseer de eikel-teller
         });
     </script>
 
