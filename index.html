@@ -53,6 +53,14 @@
         .dark-mode .dice-actions-list li::before {
             color: #D2B48C;
         }
+
+        /* --- NIVEAU CIJFERS KLEUR CORRECTIE (NIEUW/AANGEPAST) --- */
+        .dark-mode .level-display {
+            color: #e0e0e0 !important; /* Standaard lichte kleur in Dark Mode */
+        }
+        .dark-mode #leader-level, .dark-mode #camp-level, .dark-mode #acorn-count {
+            color: #D2B48C !important; /* Gebruik lichte bruin voor de cijfers van alle trackers in Dark Mode */
+        }
         
         /* --- SCHIJF STIJL --- */
         .score-disk-area {
@@ -159,7 +167,7 @@
             background-color: #2980b9;
         }
         .control-area .dark-mode-button {
-            background-color: #6a6a6a; /* Donkergrijs voor Dark Mode knop */
+            background-color: #6a6a6a; 
         }
         .control-area .dark-mode-button:hover {
             background-color: #4a4a4a;
@@ -195,12 +203,12 @@
         .tracker-controls .level-display {
             font-size: 2.5em;
             font-weight: bold;
-            color: #333;
+            color: #333; /* Standaard Donker in Light Mode */
             min-width: 40px;
             transition: color 0.3s;
         }
         .acorn-controls .level-display {
-             color: #A0522D; 
+             color: #A0522D; /* Bruin in Light Mode */
         }
         .tracker-controls button {
             background-color: #A0522D;
@@ -240,10 +248,6 @@
         .dice-actions-list {
             text-align: left;
             margin-top: 15px;
-        }
-        .dice-actions-list li {
-            margin-bottom: 5px;
-            list-style: none;
         }
         .dice-actions-list li::before {
             content: attr(data-list-number) ": ";
@@ -432,10 +436,9 @@
             const t = translations[lang];
             const isDarkMode = document.documentElement.classList.contains('dark-mode');
             
-            // Vertaal ID's
             document.getElementById('app-title').textContent = t.app_title;
             document.getElementById('lang-button').textContent = t.lang_button;
-            document.getElementById('dark-mode-button').textContent = isDarkMode ? t.dark_mode_on : t.dark_mode_off; // Vertaal de Dark Mode knop tekst
+            document.getElementById('dark-mode-button').textContent = isDarkMode ? t.dark_mode_on : t.dark_mode_off;
             document.getElementById('score-title').textContent = t.score_title;
             document.getElementById('reset-button').textContent = t.reset_button;
             document.getElementById('acorn-title').textContent = t.acorn_title;
@@ -452,7 +455,6 @@
             document.getElementById('rule-2').innerHTML = t.rule_2;
             document.getElementById('rule-3').innerHTML = t.rule_3;
             
-            // Vertaal dobbelsteen acties
             for (let i = 1; i <= 6; i++) {
                 const li = document.querySelector(`[data-trans-key="dice_${i}"]`);
                 if (li) {
@@ -460,7 +462,6 @@
                 }
             }
             
-            // Update scoreschijf indicator
             const scoreText = document.getElementById('tens-indicator').textContent.split(':');
             document.getElementById('tens-indicator').textContent = t.tens_indicator + ': ' + scoreText[scoreText.length - 1].trim();
 
@@ -476,12 +477,10 @@
             const htmlElement = document.documentElement;
             const isDarkMode = htmlElement.classList.toggle('dark-mode');
             
-            // Update de knop tekst na de schakeling
             const button = document.getElementById('dark-mode-button');
             const t = translations[currentLang];
             button.textContent = isDarkMode ? t.dark_mode_on : t.dark_mode_off;
 
-            // Sla de voorkeur op
             localStorage.setItem('darkMode', isDarkMode ? 'on' : 'off');
         }
 
@@ -566,19 +565,16 @@
 
         // Initialisatie
         document.addEventListener('DOMContentLoaded', () => {
-            // Dark Mode check
             const savedDarkMode = localStorage.getItem('darkMode');
             if (savedDarkMode === 'on') {
                 document.documentElement.classList.add('dark-mode');
             }
             
-            // Taal check
             const savedLang = localStorage.getItem('gameLang');
             if (savedLang && translations[savedLang]) {
                 currentLang = savedLang;
             }
             
-            // Render de elementen
             translatePage(currentLang);
             updateDisk();
             updateAcornCount();
