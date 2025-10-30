@@ -23,7 +23,7 @@
             margin-bottom: 20px;
         }
 
-        /* --- SCORE SCHIJF STIJL (MET JOUW AFBEELDING) --- */
+        /* --- SCORE SCHIJF STIJL --- */
         .score-disk-area {
             display: flex;
             flex-direction: column;
@@ -39,6 +39,7 @@
             width: 280px;
             height: 280px;
             border-radius: 50%;
+            /* JOUW AFBEELDINGSLINK VERWERKT */
             background-image: url('https://raw.githubusercontent.com/TotallyNuts/Totally-Nuts-Tools/main/scoreschijf1.png');
             background-size: cover;
             background-position: center;
@@ -89,7 +90,7 @@
             font-weight: bold;
         }
 
-        /* Knoppen */
+        /* Knoppen Groep */
         .control-area {
             display: flex;
             justify-content: center;
@@ -127,37 +128,52 @@
             background-color: #2980b9;
         }
 
-        /* --- EIKEL TELLER STIJL --- */
-        .acorn-counter-area {
-            background-color: #fffff0; /* Crème-kleurige achtergrond */
+        /* --- EIKEL & NIVEAU TELLER STIJL --- */
+        .resource-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .acorn-counter-area, .level-tracker {
+            background-color: #fffff0; 
             padding: 20px;
             border-radius: 10px;
-            margin-top: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             border: 2px solid #D2B48C;
+            text-align: center;
         }
-        .acorn-controls {
+        .level-tracker {
+            background-color: #e0f7fa; /* Lichtere kleur voor onderscheid */
+            border-color: #00bcd4;
+        }
+        .tracker-controls {
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 15px;
             margin-top: 10px;
         }
-        #acorn-count {
+        .tracker-controls .level-display {
             font-size: 2.5em;
             font-weight: bold;
-            color: #A0522D; /* Bruin */
-            min-width: 50px;
+            color: #333;
+            min-width: 40px;
         }
-        .acorn-controls button {
+        .acorn-controls .level-display {
+             color: #A0522D; /* Bruin voor eikels */
+        }
+        .tracker-controls button {
             background-color: #A0522D;
-            font-size: 1.5em;
+            font-size: 1.2em;
             padding: 5px 15px;
         }
-        .acorn-controls button:hover {
+        .tracker-controls .reset-level-button {
+            background-color: #333;
+        }
+        .tracker-controls button:hover {
             background-color: #8B4513;
         }
-
 
         /* --- DOBBELSTEEN & REGELS STIJL --- */
         .dice-container, .rules-section {
@@ -228,14 +244,36 @@
 
         <hr>
 
-        <div class="acorn-counter-area">
-            <h2 id="acorn-title">💰 Eikel Teller</h2>
-            <div class="acorn-controls">
-                <button onclick="changeAcornCount(-1)" id="acorn-minus-button">-1</button>
-                <span id="acorn-count">10</span>
-                <button onclick="changeAcornCount(1)" id="acorn-plus-button">+1</button>
+        <div class="resource-section">
+            
+            <div class="acorn-counter-area">
+                <h2 id="acorn-title">💰 Eikel Teller</h2>
+                <div class="tracker-controls acorn-controls">
+                    <button onclick="changeAcornCount(-1)" id="acorn-minus-button">-1</button>
+                    <span id="acorn-count" class="level-display">10</span>
+                    <button onclick="changeAcornCount(1)" id="acorn-plus-button">+1</button>
+                </div>
+                <p id="acorn-info">Start met 10 eikels. Maximaal 20.</p>
             </div>
-            <p id="acorn-info">Start met 10 eikels. Maximaal 20.</p>
+
+            <div class="level-tracker">
+                <h2 id="leader-title">👑 Leider Niveau (1-8)</h2>
+                <div class="tracker-controls">
+                    <button onclick="changeLevel('leader', 1)" id="leader-plus-button">+1</button>
+                    <span id="leader-level" class="level-display">1</span>
+                    <button onclick="resetLevel('leader')" id="leader-reset-button" class="reset-level-button">Reset (1)</button>
+                </div>
+            </div>
+
+            <div class="level-tracker">
+                <h2 id="camp-title">⛺ Trainingskamp Niveau (1-8)</h2>
+                <div class="tracker-controls">
+                    <button onclick="changeLevel('camp', 1)" id="camp-plus-button">+1</button>
+                    <span id="camp-level" class="level-display">1</span>
+                    <button onclick="resetLevel('camp')" id="camp-reset-button" class="reset-level-button">Reset (1)</button>
+                </div>
+            </div>
+
         </div>
 
         <hr>
@@ -277,8 +315,14 @@
 
     <script>
         let score = 0;
-        let acornCount = 10; // Start met 10 eikels
+        let acornCount = 10;
+        let leaderLevel = 1;
+        let campLevel = 1;
+        
         const maxAcorns = 20;
+        const maxLevel = 8;
+        const minLevel = 1;
+
         const degreesPerStep = 36;
         let currentLang = 'nl'; 
 
@@ -292,6 +336,8 @@
                 'reset_button': 'Score Reset (0)',
                 'acorn_title': '💰 Acorn Counter',
                 'acorn_info': 'Start with 10 Acorns. Max 20.',
+                'leader_title': '👑 Leader Level (1-8)',
+                'camp_title': '⛺ Training Camp Level (1-8)',
                 'dice_title': '🎲 Virtual Die',
                 'roll_button': 'Roll Die (d6)',
                 'actions_title': 'Actions per Roll:',
@@ -316,6 +362,8 @@
                 'reset_button': 'Score Reset (0)',
                 'acorn_title': '💰 Eikel Teller',
                 'acorn_info': 'Start met 10 eikels. Maximaal 20.',
+                'leader_title': '👑 Leider Niveau (1-8)',
+                'camp_title': '⛺ Trainingskamp Niveau (1-8)',
                 'dice_title': '🎲 Virtuele Dobbelsteen',
                 'roll_button': 'Werp Dobbelsteen (d6)',
                 'actions_title': 'Acties per Worp:',
@@ -337,13 +385,15 @@
         function translatePage(lang) {
             const t = translations[lang];
             
-            // Vertaling van de elementen
+            // Vertaal alle ID's
             document.getElementById('app-title').textContent = t.app_title;
             document.getElementById('lang-button').textContent = t.lang_button;
             document.getElementById('score-title').textContent = t.score_title;
             document.getElementById('reset-button').textContent = t.reset_button;
             document.getElementById('acorn-title').textContent = t.acorn_title;
             document.getElementById('acorn-info').textContent = t.acorn_info;
+            document.getElementById('leader-title').textContent = t.leader_title; // Nieuw
+            document.getElementById('camp-title').textContent = t.camp_title; // Nieuw
             document.getElementById('dice-title').textContent = t.dice_title;
             document.getElementById('roll-button').textContent = t.roll_button;
             document.getElementById('actions-title').textContent = t.actions_title;
@@ -353,8 +403,8 @@
             document.getElementById('rule-1').innerHTML = t.rule_1;
             document.getElementById('rule-2').innerHTML = t.rule_2;
             document.getElementById('rule-3').innerHTML = t.rule_3;
-
-            // Vertaling van de dobbelsteen acties
+            
+            // Vertaal dobbelsteen acties
             for (let i = 1; i <= 6; i++) {
                 const li = document.querySelector(`[data-trans-key="dice_${i}"]`);
                 if (li) {
@@ -362,7 +412,7 @@
                 }
             }
             
-            // Update de scoreschijf indicator (alleen de tekst)
+            // Update scoreschijf indicator
             const scoreText = document.getElementById('tens-indicator').textContent.split(':');
             document.getElementById('tens-indicator').textContent = t.tens_indicator + ': ' + scoreText[scoreText.length - 1].trim();
 
@@ -390,13 +440,8 @@
 
         function changeScore(value) {
             score += value;
-
-            if (score < 0) {
-                score = 0;
-            } else if (score > 29) {
-                score = 29;
-            }
-            
+            if (score < 0) { score = 0; } 
+            else if (score > 29) { score = 29; }
             updateDisk();
         }
 
@@ -409,24 +454,48 @@
 
         function updateAcornCount() {
             document.getElementById('acorn-count').textContent = acornCount;
-            // Eikels kunnen niet negatief zijn, dus zet de min-knop uit als de teller 0 is
             document.getElementById('acorn-minus-button').disabled = (acornCount <= 0);
-            // Je kunt niet boven de 20 uitkomen, dus zet de plus-knop uit als de teller 20 is
             document.getElementById('acorn-plus-button').disabled = (acornCount >= maxAcorns);
         }
 
         function changeAcornCount(value) {
             let newCount = acornCount + value;
-
-            // Limieten toepassen (0-20)
-            if (newCount < 0) {
-                newCount = 0;
-            } else if (newCount > maxAcorns) {
-                newCount = maxAcorns;
-            }
-            
+            if (newCount < 0) { newCount = 0; } 
+            else if (newCount > maxAcorns) { newCount = maxAcorns; }
             acornCount = newCount;
             updateAcornCount();
+        }
+        
+        // --- NIVEAU TRACKER FUNCTIES (NIEUW) ---
+
+        function updateLevelDisplay(type) {
+            const level = (type === 'leader') ? leaderLevel : campLevel;
+            const element = document.getElementById(type + '-level');
+            const plusButton = document.getElementById(type + '-plus-button');
+            
+            element.textContent = level;
+            
+            // Schakel knoppen uit bij maximale of minimale niveaus
+            plusButton.disabled = (level >= maxLevel);
+        }
+
+        function changeLevel(type, value) {
+            let currentLevel = (type === 'leader') ? leaderLevel : campLevel;
+            let newLevel = currentLevel + value;
+
+            if (newLevel < minLevel) { newLevel = minLevel; } 
+            else if (newLevel > maxLevel) { newLevel = maxLevel; }
+
+            if (type === 'leader') { leaderLevel = newLevel; } 
+            else { campLevel = newLevel; }
+            
+            updateLevelDisplay(type);
+        }
+
+        function resetLevel(type) {
+            if (type === 'leader') { leaderLevel = minLevel; } 
+            else { campLevel = minLevel; }
+            updateLevelDisplay(type);
         }
 
         // --- DOBBELSTEEN FUNCTIE ---
@@ -436,7 +505,7 @@
             document.getElementById('dice-result').textContent = result;
         }
 
-        // Initialisatie: Laad de pagina en controleer de taal en scores
+        // Initialisatie
         document.addEventListener('DOMContentLoaded', () => {
             const savedLang = localStorage.getItem('gameLang');
             if (savedLang && translations[savedLang]) {
@@ -444,7 +513,9 @@
             }
             translatePage(currentLang);
             updateDisk();
-            updateAcornCount(); // Initialiseer de eikel-teller
+            updateAcornCount();
+            updateLevelDisplay('leader');
+            updateLevelDisplay('camp');
         });
     </script>
 
