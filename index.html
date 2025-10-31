@@ -264,7 +264,7 @@
             <button onclick="toggleDarkMode()" id="dark-mode-button" class="dark-mode-button">🌙 Donkere Modus</button>
         </div>
 
-        <h2 id="score-title">🌰 Totally Nuts Score Schijf (0-29)</h2>
+        <h2 id="score-title">🌰 Totally Nuts Score Schijf (0-59)</h2>
         <div class="score-disk-area">
             
             <div id="score-disk-visual">
@@ -343,7 +343,7 @@
         
         <div class="rules-section">
             <h2 id="rules-title">📜 Spelregels</h2>
-            <p id="rules-intro">Welkom bij de digitale hulpmiddelen voor Totally Nuts Game! Gebruik de scoreschijf hierboven om je score tot 29 bij te houden.</p>
+            <p id="rules-intro">Welkom bij de digitale hulpmiddelen voor Totally Nuts Game! Gebruik de scoreschijf hierboven om je score tot 59 bij te houden.</p>
             
             <h3 id="rules-subtitle">Een Beurt Spelen</h3>
             <ul>
@@ -365,6 +365,7 @@
         const maxLevel = 8;
         const minLevel = 1;
         const degreesPerStep = 36;
+        const MAX_SCORE = 59; // De nieuwe maximale score
         
         // --- TAAL VERTALINGEN ---
         const translations = {
@@ -373,7 +374,7 @@
                 'lang_button': 'Schakel naar Nederlands',
                 'dark_mode_on': '☀️ Lichte Modus',
                 'dark_mode_off': '🌙 Donkere Modus',
-                'score_title': '🌰 Totally Nuts Score Disc (0-29)',
+                'score_title': '🌰 Totally Nuts Score Disc (0-59)', // Aangepast
                 'tens_indicator': 'Current Score:',
                 'reset_button': 'Score Reset (0)',
                 'acorn_title': '💰 Acorn Counter',
@@ -390,7 +391,7 @@
                 'dice_5': 'Every player blindly draws a combat card',
                 'dice_6': 'Double leader strength (or strongest leader if >2 players) this round',
                 'rules_title': '📜 Game Rules',
-                'rules_intro': 'Welcome to the Totally Nuts Game digital tools! Use the score disc above to track your score up to 29.',
+                'rules_intro': 'Welcome to the Totally Nuts Game digital tools! Use the score disc above to track your score up to 59.', // Aangepast
                 'rules_subtitle': 'Playing a Turn',
                 'rule_1': '**Roll.** Use the virtual die to determine an action.',
                 'rule_2': '**Action.** Follow the instructions of the roll.',
@@ -401,7 +402,7 @@
                 'lang_button': 'Switch to English',
                 'dark_mode_on': '☀️ Light Mode',
                 'dark_mode_off': '🌙 Donkere Modus',
-                'score_title': '🌰 Totally Nuts Score Schijf (0-29)',
+                'score_title': '🌰 Totally Nuts Score Schijf (0-59)', // Aangepast
                 'tens_indicator': 'Huidige Score:',
                 'reset_button': 'Score Reset (0)',
                 'acorn_title': '💰 Eikel Teller',
@@ -418,7 +419,7 @@
                 'dice_5': 'Elke speler pakt blind een **gevechtskaart**',
                 'dice_6': 'Dubbele kracht **leider** (of sterkste leider bij meer dan 2 spelers) deze ronde',
                 'rules_title': '📜 Spelregels',
-                'rules_intro': 'Welkom bij de digitale hulpmiddelen voor Totally Nuts Game! Gebruik de scoreschijf hierboven om je score tot 29 bij te houden.',
+                'rules_intro': 'Welkom bij de digitale hulpmiddelen voor Totally Nuts Game! Gebruik de scoreschijf hierboven om je score tot 59 bij te houden.', // Aangepast
                 'rules_subtitle': 'Een Beurt Spelen',
                 'rule_1': '**Werp.** Gebruik de virtuele dobbelsteen om een actie te bepalen.',
                 'rule_2': '**Actie.** Volg de instructies van de worp.',
@@ -480,7 +481,7 @@
             localStorage.setItem('darkMode', isDarkMode ? 'on' : 'off');
         }
 
-        // --- SCORESCHIJF FUNCTIES ---
+        // --- SCORESCHIJF FUNCTIES (AANGEPAST) ---
         
         function updateDisk() {
             const pointer = document.getElementById('score-pointer');
@@ -495,9 +496,15 @@
         }
 
         function changeScore(value) {
-            score += value;
-            if (score < 0) { score = 0; } 
-            else if (score > 29) { score = 29; }
+            let newScore = score + value;
+            
+            if (newScore < 0) { 
+                newScore = 0; 
+            } else if (newScore > MAX_SCORE) { 
+                newScore = MAX_SCORE; 
+            }
+            
+            score = newScore;
             updateDisk();
         }
 
@@ -510,7 +517,9 @@
 
         function updateAcornCount() {
             document.getElementById('acorn-count').textContent = acornCount;
-            // Knoppen worden gecontroleerd in de functie changeAcornCount
+            // Deactiveer knoppen indien limieten bereikt zijn 
+            document.getElementById('acorn-minus-button').disabled = (acornCount <= 0);
+            document.getElementById('acorn-plus-button').disabled = (acornCount >= maxAcorns);
         }
 
         function changeAcornCount(value) {
@@ -519,13 +528,9 @@
             else if (newCount > maxAcorns) { newCount = maxAcorns; }
             acornCount = newCount;
             updateAcornCount();
-            
-            // Deactiveer knoppen indien limieten bereikt zijn (optioneel, maar goed voor UI)
-            document.getElementById('acorn-minus-button').disabled = (acornCount <= 0);
-            document.getElementById('acorn-plus-button').disabled = (acornCount >= maxAcorns);
         }
         
-        // --- NIVEAU TRACKER FUNCTIES (AANGEPAST) ---
+        // --- NIVEAU TRACKER FUNCTIES ---
 
         function updateLevelDisplay(type) {
             const level = (type === 'leader') ? leaderLevel : campLevel;
@@ -552,8 +557,6 @@
             
             updateLevelDisplay(type);
         }
-        
-        // De resetLevel functie is niet meer nodig, maar kan teruggezet worden indien gewenst.
 
         // --- DOBBELSTEEN FUNCTIE ---
 
